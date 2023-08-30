@@ -8,8 +8,8 @@ app.use(bodyParser.json());
 const secretKey = 'your-secret-key'; // Change this to a secure secret key
 
 const users = [
-  { id: 1, username: 'maa', password: 'LiveDekhbo@7419' },
-  { id: 2, username: 'chele', password: 'LiveDekhbo@7419' },
+  { id: 1, username: 'maa', password: 'LiveDekhbo@7419maa' },
+  { id: 2, username: 'babai', password: 'LiveDekhbo@7419babai' },
 ];
 
 // Generate JWT
