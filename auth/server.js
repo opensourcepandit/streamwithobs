@@ -1,40 +1,78 @@
 const express = require('express');
-// const dotenv = require('dotenv');
-// const jwt = require('jwtwebtoken');
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 const app = express();
-// dotenv.config();
+app.use(bodyParser.json());
 
-// JWT token to authenticate 
-// app.post("/auth/token/generateToken", function(res, req) {
-//     let jwtSecretKey = process.env.JWT_SECRET_KEY;
-//     let data = {
-//         userId: 5426,
-//         time: Date()
-//     }
-//     const token = jwt.sign(data, jwtSecretKey);
-//     res.send(token);
-// });
+const secretKey = 'your-secret-key'; // Change this to a secure secret key
+
+const users = [
+  { id: 1, username: 'maa', password: 'LiveDekhbo@7419' },
+  { id: 2, username: 'chele', password: 'LiveDekhbo@7419' },
+];
+
+// Generate JWT
+function generateToken(user) {
+  const payload = { id: user.id, username: user.username };
+  return jwt.sign(payload, secretKey, { expiresIn: '1h' });
+}
+
+// Middleware to verify JWT
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+    req.user = user;
+    next();
+  });
+}
+
+// Login route
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = users.find(u => u.username === username && u.password === password);
+  
+  if (!user) {
+    return res.sendStatus(401);
+  }
+  
+  const token = generateToken(user);
+  res.json({ token });
+});
+
+// Protected route
+app.get('/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'This is a protected route.', user: req.user });
+});
 
 
-// app.get("/auth/token/validateToken", (req, res) => {
+app.get("/auth/token/validateToken", (req, res) => {
   
-//     let tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
-//     let jwtSecretKey = process.env.JWT_SECRET_KEY;
+    let tokenHeaderKey = tokenHeaderKey;
+    let jwtSecretKey = jwtSecretKey;
   
-//     try {
-//         const token = req.header(tokenHeaderKey);
+    try {
+        const token = req.header(tokenHeaderKey);
   
-//         const verified = jwt.verify(token, jwtSecretKey);
-//         if(verified){
-//             return res.send("Successfully Verified");
-//         }else{
-//             return res.status(401).send(error);
-//         }
-//     } catch (error) {
-//         return res.status(401).send(error);
-//     }
-// });
+        const verified = jwt.verify(token, jwtSecretKey);
+        if(verified){
+            return res.send("Successfully Verified");
+        }else{
+            return res.status(401).send(error);
+        }
+    } catch (error) {
+        return res.status(401).send(error);
+    }
+});
 
 
 // OBS
