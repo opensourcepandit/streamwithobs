@@ -1,9 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+app.use(express.urlencoded());
 
 const secretKey = 'your-secret-key'; // Change this to a secure secret key
 
@@ -76,7 +77,6 @@ app.get("/auth/token/validateToken", (req, res) => {
 
 
 // OBS
-app.use(express.urlencoded());
 
 app.post("/auth", function(req, res) {
     const streamkey = req.body.key;
